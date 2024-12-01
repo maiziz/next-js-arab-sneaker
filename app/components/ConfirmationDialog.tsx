@@ -1,11 +1,32 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCart } from '../context/CartContext';
+
 interface ConfirmationDialogProps {
   open: boolean;
   onClose: () => void;
 }
 
 export default function ConfirmationDialog({ open, onClose }: ConfirmationDialogProps) {
+  const router = useRouter();
+  const { clearCart } = useCart();
+
+  useEffect(() => {
+    if (open) {
+      // Clear cart and redirect after 2 seconds
+      const timer = setTimeout(() => {
+        clearCart();
+        onClose();
+        router.push('/');
+        router.refresh(); // Force a refresh to update the cart state
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [open, clearCart, onClose, router]);
+
   if (!open) return null;
 
   return (

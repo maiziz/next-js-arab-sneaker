@@ -21,62 +21,44 @@ export const availableSizes = [
 export interface Product {
   id: number;
   name: string;
-  brand: string;
-  brandAr: string;
-  category: string;
-  price: number;
   description: string;
+  price: number;
   image: string;
-  rating: number;
-  reviews: number;
-  isNewArrival?: boolean;
-  colors: string[];
+  category: string;
   sizes: string[];
+  colors: string[];
 }
 
 export const productData: Product[] = [
   {
     id: 1,
-    name: 'نايك اير جوردن 1 هاي',
-    brand: 'Nike',
-    brandAr: 'نايك',
-    category: 'رياضي',
+    name: 'نايك اير جوردن',
+    description: 'حذاء رياضي مريح وأنيق من نايك، مثالي للرياضة والاستخدام اليومي',
     price: 24999,
-    description: 'حذاء رياضي كلاسيكي بتصميم عصري وأنيق',
-    image: '/images/products/nike-air-jordan.jpg',
-    rating: 4.8,
-    reviews: 245,
-    isNewArrival: true,
-    colors: ['أسود', 'أحمر', 'أبيض'],
-    sizes: ['40', '41', '42', '43', '44']
+    image: 'https://raw.githubusercontent.com/saiik0z/sneaker-imgs/main/nike-air-jordan.png',
+    category: 'أحذية رياضية',
+    sizes: ['40', '41', '42', '43', '44', '45'],
+    colors: ['أسود', 'أحمر', 'أبيض']
   },
   {
     id: 2,
-    name: 'اديداس ألترا بوست',
-    brand: 'Adidas',
-    brandAr: 'اديداس',
-    category: 'أحذية الجري',
-    price: 19999,
-    description: 'حذاء رياضي مريح مثالي للجري والتمارين الرياضية',
-    image: '/images/products/adidas-ultraboost.jpg',
-    rating: 4.6,
-    reviews: 189,
-    colors: ['أسود', 'رمادي', 'أزرق'],
-    sizes: ['39', '40', '41', '42', '43']
+    name: 'نيو بالانس 574',
+    description: 'حذاء كلاسيكي من نيو بالانس، مريح للغاية ومناسب للمشي اليومي',
+    price: 18999,
+    image: 'https://raw.githubusercontent.com/saiik0z/sneaker-imgs/main/new-balance-574.png',
+    category: 'أحذية رياضية',
+    sizes: ['40', '41', '42', '43', '44'],
+    colors: ['رمادي', 'أزرق', 'أسود']
   },
   {
     id: 3,
-    name: 'نيو بالانس 574',
-    brand: 'New Balance',
-    brandAr: 'نيو بالانس',
-    category: 'كاجوال',
-    price: 15999,
-    description: 'حذاء كاجوال عصري مريح للاستخدام اليومي',
-    image: '/images/products/new-balance-574.jpg',
-    rating: 4.5,
-    reviews: 156,
-    colors: ['رمادي', 'أسود', 'أبيض'],
-    sizes: ['40', '41', '42', '43']
+    name: 'أديداس ألترابوست',
+    description: 'حذاء رياضي مبتكر من أديداس، يوفر راحة استثنائية أثناء الجري',
+    price: 21999,
+    image: 'https://raw.githubusercontent.com/saiik0z/sneaker-imgs/main/adidas-ultraboost.png',
+    category: 'أحذية رياضية',
+    sizes: ['41', '42', '43', '44', '45'],
+    colors: ['أسود', 'أبيض', 'رمادي']
   }
 ];
 

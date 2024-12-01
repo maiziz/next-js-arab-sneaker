@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useCart } from '../context/CartContext';
 import DeliveryForm from './DeliveryForm';
 import ConfirmationDialog from './ConfirmationDialog';
 
@@ -17,20 +18,21 @@ interface CartSummaryProps {
   cartItems: CartItem[];
 }
 
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('ar-DZ', {
-    style: 'currency',
-    currency: 'DZD'
-  }).format(price);
-};
-
 export default function CartSummary({ cartItems }: CartSummaryProps) {
   const router = useRouter();
+  const { clearCart } = useCart();
   const [showDeliveryForm, setShowDeliveryForm] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const total = subtotal + DELIVERY_PRICE;
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('ar-DZ', {
+      style: 'currency',
+      currency: 'DZD'
+    }).format(price);
+  };
 
   const handleProceedToCheckout = () => {
     setShowDeliveryForm(true);
@@ -38,9 +40,30 @@ export default function CartSummary({ cartItems }: CartSummaryProps) {
 
   const handleDeliverySubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    clearCart(); // Clear cart immediately after form submission
     setShowDeliveryForm(false);
     setShowConfirmation(true);
+    localStorage.removeItem('cart'); // Also clear cart from localStorage
   };
+
+  const handleConfirmationClose = () => {
+    setShowConfirmation(false);
+    router.push('/');
+  };
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">السلة فارغة</h2>
+        <button
+          onClick={() => router.push('/')}
+          className="text-indigo-600 hover:text-indigo-800"
+        >
+          العودة للتسوق
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -91,10 +114,7 @@ export default function CartSummary({ cartItems }: CartSummaryProps) {
 
       <ConfirmationDialog
         open={showConfirmation}
-        onClose={() => {
-          setShowConfirmation(false);
-          router.push('/');
-        }}
+        onClose={handleConfirmationClose}
       />
     </>
   );

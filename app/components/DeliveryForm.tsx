@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCart } from '../context/CartContext';
 import { wilayas } from '../data/algerianWilayas';
 
 interface DeliveryFormProps {
@@ -16,6 +18,8 @@ interface DeliveryInfo {
 }
 
 export default function DeliveryForm({ onClose, onSubmit }: DeliveryFormProps) {
+  const router = useRouter();
+  const { clearCart } = useCart();
   const [deliveryInfo, setDeliveryInfo] = useState<DeliveryInfo>({
     fullName: '',
     phoneNumber: '',
@@ -24,6 +28,8 @@ export default function DeliveryForm({ onClose, onSubmit }: DeliveryFormProps) {
   });
 
   const [errors, setErrors] = useState<Partial<DeliveryInfo>>({});
+  const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -31,7 +37,6 @@ export default function DeliveryForm({ onClose, onSubmit }: DeliveryFormProps) {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (errors[name as keyof DeliveryInfo]) {
       setErrors(prev => ({
         ...prev,
@@ -65,12 +70,48 @@ export default function DeliveryForm({ onClose, onSubmit }: DeliveryFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(e);
+      setLoading(true);
+      try {
+        // Show success message
+        setShowSuccess(true);
+        
+        // Wait for 3 seconds to show the success message
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        // Clear cart and redirect
+        clearCart();
+        router.push('/');
+        router.refresh();
+      } catch (error) {
+        console.error('Error submitting form:', error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
+
+  if (showSuccess) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-indigo-900 mb-4">
+              شكراً لك!
+            </h2>
+            <p className="text-gray-600 mb-4">
+              تم استلام طلبك بنجاح
+            </p>
+            <p className="text-gray-600">
+              سيتم معالجة طلبك والاتصال بك خلال 24 ساعة القادمة
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -102,6 +143,7 @@ export default function DeliveryForm({ onClose, onSubmit }: DeliveryFormProps) {
                 errors.fullName ? 'border-red-500' : 'border-gray-300'
               }`}
               dir="rtl"
+              disabled={loading}
             />
             {errors.fullName && (
               <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
@@ -123,6 +165,7 @@ export default function DeliveryForm({ onClose, onSubmit }: DeliveryFormProps) {
                 errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
               }`}
               dir="ltr"
+              disabled={loading}
             />
             {errors.phoneNumber && (
               <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
@@ -142,6 +185,7 @@ export default function DeliveryForm({ onClose, onSubmit }: DeliveryFormProps) {
                 errors.wilaya ? 'border-red-500' : 'border-gray-300'
               }`}
               dir="rtl"
+              disabled={loading}
             >
               <option value="">اختر الولاية</option>
               {wilayas.map((wilaya) => (
@@ -169,6 +213,7 @@ export default function DeliveryForm({ onClose, onSubmit }: DeliveryFormProps) {
                 errors.address ? 'border-red-500' : 'border-gray-300'
               }`}
               dir="rtl"
+              disabled={loading}
             />
             {errors.address && (
               <p className="text-red-500 text-sm mt-1">{errors.address}</p>
@@ -180,14 +225,16 @@ export default function DeliveryForm({ onClose, onSubmit }: DeliveryFormProps) {
               type="button"
               onClick={onClose}
               className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              disabled={loading}
             >
               إلغاء
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+              disabled={loading}
             >
-              تأكيد الطلب
+              {loading ? 'جاري التأكيد...' : 'تأكيد الطلب'}
             </button>
           </div>
         </form>
